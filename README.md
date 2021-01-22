@@ -5,7 +5,7 @@ Please fill free to use this code as a base for your own dynamic template.
 ## How to install
 1. Create a **new page** in your Roam database caleed `roam/js`.
 2. Add a `{{[[roam/js]]}}` tag
-3. Add a child JavaScript code block and copy code their
+3. Add a child JavaScript code block and copy code from **DynamicTemplate.js**
 
 ## Usage
 By pressing `;;hi` you will get dynamic template with 3 random questions.
