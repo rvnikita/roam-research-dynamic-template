@@ -1,4 +1,6 @@
-#Dynamic templates
+# Dynamic templates
+With this code you can create dynamic [Roam Research](https://roamresearch.com/) templates that are working both on desktop and mobile. 
+Please fill free to use this code as a base for your own dynamic template.
 
 ## How to install
 1. Create a **new page** in your Roam database caleed `roam/js`.
