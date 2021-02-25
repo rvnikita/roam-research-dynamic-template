@@ -121,17 +121,6 @@ document.addEventListener('keyup', event => {
     window.roamAlphaAPI.updateBlock({"block": {"uid": block_id, "string": "#[[[[personal]] [[reflection]]]] #[[[[personal]] diary]]"}})
     //event.target.value = event.target.value.substring(0, event.target.value.length - template.length);
     
-    i = 0
-    
-    for(i=0;i<500;i++)
-      {
-        window.roamAlphaAPI.createBlock({"location": 
-		{"parent-uid": block_id, 
-		 "order": 0}, 
-	 "block": 
-		{"string": question}})
-      }
-    
     for (question of get_random_questions(questions_amount, questions))
     {
       //create question
