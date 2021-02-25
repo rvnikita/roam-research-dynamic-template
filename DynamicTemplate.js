@@ -1,12 +1,15 @@
 //https://medium.com/javascript-in-plain-english/how-to-detect-a-sequence-of-keystrokes-in-javascript-83ec6ffd8e93
+//https://www.putyourleftfoot.in/introduction-to-the-roam-alpha-api
+
 let buffer = [];
 let lastKeyTime = Date.now();
 
-let template = ";;hi"
+let morning_template = ";;hm"
+let evening_template = ";;he"
 let key_delay = 3000
 
 //HERE IS QUESTIONS
-let questions = 
+let evening_questions = 
 [
 "What did I learn today?",
 "What went well?",
@@ -23,10 +26,22 @@ let questions =
 "Did I eat good today?",
 "How do I feel today?",
 "Am I proud of myself?",
+"What I am worried about?",
 "If you could only leave one memory of today, what kind of memory would it be?"
 ];
+
+let morning_questions = 
+[
+"What is the main goal for today?",
+"What should I do to make this day productive",
+"What habit will I reinforce today?"
+];
+
 let questions_amount = 3
 
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 function shuffle(array) {
   var currentIndex = array.length, temporaryValue, randomIndex;
@@ -48,20 +63,19 @@ function shuffle(array) {
 }
 
 
-function hyper_island_questions(count)
+function get_random_questions(count, questions)
 {
-	hyper_island_questions_string = []
+  hyper_island_questions_array = []
   //SHUFFLE THEM
   shuffle(questions);
 
   //PRINT
-  hyper_island_questions_string += "- #[[[[personal]] [[reflection]]]] #[[[[personal]] diary]]\n";
   for(var i = 0; i < count; i++)
   {
-    hyper_island_questions_string += "    - [[" + questions[i] +"]]\n" ;
+    hyper_island_questions_array[i] = "[[" + questions[i] +"]]" ;
   }
   
-  return hyper_island_questions_string
+  return hyper_island_questions_array
 }
 
 
@@ -86,16 +100,74 @@ document.addEventListener('keyup', event => {
   buffer.push(key);
   lastKeyTime = currentTime;
   
-  if(buffer.join("").includes(template)) {
+  if(buffer.join("").includes(evening_template) || buffer.join("").includes(morning_template)) 
+  {	  
+	if(buffer.join("").includes(evening_template))
+	{
+		questions = evening_questions
+	}
+	else if (buffer.join("").includes(morning_template))
+	{
+		questions = morning_questions
+	}
   	//remove entered shortcut
-		event.target.value = event.target.value.substring(0, event.target.value.length - template.length);
-    
-    event.target.value += hyper_island_questions(questions_amount)
-    
     event.target.focus();
-    //elem.dispatchEvent(new Event('input', {bubbles: true, cancelable: true }));
+    
+    block_html_id = event.target.id.toString()
+    block_id = block_html_id.substring(block_html_id.length - 9) //getting block uid
+    
+    console.log(block_id);
+    
+    window.roamAlphaAPI.updateBlock({"block": {"uid": block_id, "string": "#[[[[personal]] [[reflection]]]] #[[[[personal]] diary]]"}})
+    //event.target.value = event.target.value.substring(0, event.target.value.length - template.length);
+    
+    i = 0
+    
+    for(i=0;i<500;i++)
+      {
+        window.roamAlphaAPI.createBlock({"location": 
+		{"parent-uid": block_id, 
+		 "order": 0}, 
+	 "block": 
+		{"string": question}})
+      }
+    
+    for (question of get_random_questions(questions_amount, questions))
+    {
+      //create question
+      window.roamAlphaAPI.createBlock({"location": 
+		{"parent-uid": block_id, 
+		 "order": 0}, 
+	 "block": 
+		{"string": question}})
+      
+	/*
+      //find new block id, that's crazy window.roamAlphaAPI.createBlock does not return it directly.
+      question_block_id = window.roamAlphaAPI.q(`
+    [:find ?block_uid
+     :in $ ?parent_uid ?block_string
+     :where
+     [?parent :block/uid ?parent_uid]
+     [?block :block/parents ?parent]
+     [?block :block/string ?block_string]
+     [?block :block/uid ?block_uid]
+    ]`, block_id , question);
+      
+	  if(question_block_id)
+	  {
+	      //create blank block for answer
+	      window.roamAlphaAPI.createBlock({"location": 
+			{"parent-uid": question_block_id[0][0], 
+			 "order": 0}, 
+		 "block": 
+			{"string": "answer"}})
+	   }
+       */
+    }
+ 
     
     buffer = []; //clear buffer
+    
     
   }
   
