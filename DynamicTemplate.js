@@ -32,9 +32,9 @@ let evening_questions =
 
 let morning_questions = 
 [
-"What is the main goal for today?",
-"What should I do to make this day productive",
-"What habit will I reinforce today?"
+"What’s going to be the highlight of my day?",
+"What habit will I reinforce today?",
+"What is top 3 task for today?",
 ];
 
 let questions_amount = 3
@@ -113,6 +113,11 @@ document.addEventListener('keyup', event => {
   	//remove entered shortcut
     event.target.focus();
     
+    insert_blocks(event)
+}
+                          
+async function insert_blocks(event)
+{
     block_html_id = event.target.id.toString()
     block_id = block_html_id.substring(block_html_id.length - 9) //getting block uid
     
@@ -124,13 +129,14 @@ document.addEventListener('keyup', event => {
     for (question of get_random_questions(questions_amount, questions))
     {
       //create question
-      window.roamAlphaAPI.createBlock({"location": 
+      await window.roamAlphaAPI.createBlock({"location": 
 		{"parent-uid": block_id, 
 		 "order": 0}, 
 	 "block": 
 		{"string": question}})
       
-	/*
+      await sleep(25);
+	
       //find new block id, that's crazy window.roamAlphaAPI.createBlock does not return it directly.
       question_block_id = window.roamAlphaAPI.q(`
     [:find ?block_uid
@@ -149,16 +155,9 @@ document.addEventListener('keyup', event => {
 			{"parent-uid": question_block_id[0][0], 
 			 "order": 0}, 
 		 "block": 
-			{"string": "answer"}})
-	   }
-       */
+			{"string": ""}})
+	   }  
     }
- 
-    
     buffer = []; //clear buffer
-    
-    
   }
-  
-  
 });
